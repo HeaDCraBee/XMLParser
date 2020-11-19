@@ -29,6 +29,7 @@ namespace TestTask
          * Список ID'шников
          */
         private List<string> IDs = new List<string>();
+        private ListView list;
 
         [Obsolete]
         protected override void OnCreate(Bundle savedInstanceState)
@@ -38,9 +39,8 @@ namespace TestTask
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             // Set our view from the "main" layout resource
             SetContentView(Resource.Layout.activity_main);
-            ListView list = FindViewById<ListView>(Resource.Id.listView1);
+            list = FindViewById<ListView>(Resource.Id.listView1);
             list.SetAdapter(adapter);
-
             list.ItemClick += List_ItemClick;
         }
 
@@ -153,7 +153,19 @@ namespace TestTask
             if (IDstoOfferClasses.TryGetValue(Int32.Parse(item), out offer))
             {
                 textView.Text = JsonConvert.SerializeObject(offer);
-            }
+
+            }      
+            
+        }
+
+        [Obsolete]
+        public override void OnBackPressed()
+        {    
+            base.SetContentView(Resource.Layout.activity_main);
+            list = FindViewById<ListView>(Resource.Id.listView1);
+            adapter = new ArrayAdapter<string>(this, Android.Resource.Layout.SimpleListItem1, IDs);
+            list.SetAdapter(adapter);
+            list.ItemClick += List_ItemClick;
         }
 
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)

@@ -61,6 +61,14 @@
     <Reference Include="System.Numerics.Vectors" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Factorys\AudioBookFactory.cs" />
+    <Compile Include="Factorys\BookFactory.cs" />
+    <Compile Include="Factorys\ArtistTitleFactory.cs" />
+    <Compile Include="Factorys\EventTicketFactory.cs" />
+    <Compile Include="Factorys\TourFactory.cs" />
+    <Compile Include="Factorys\VendorFactory.cs" />
+    <Compile Include="IOfferInitialize.cs" />
+    <Compile Include="Factorys\IOffersFactory.cs" />
     <Compile Include="OfferType.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="Resources\Resource.designer.cs" />

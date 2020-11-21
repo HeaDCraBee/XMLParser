@@ -10,7 +10,7 @@ namespace TestTask
      * Каждый дочерний класс использует методы этого для заполнения стандартных полей и свой метод ParseOther, который заполняет индивидуальные поля этого класса
      * Можно получить любой компонент offer, написав геттер. Написав сеттер можно их изменять, но нужно написать метод изменения AllData
      */
-    abstract class OfferType
+    abstract class OffersType : IOfferInitialize
     {
         protected int Id;
         protected string type;
@@ -25,14 +25,24 @@ namespace TestTask
 
 
 
-        public XmlNode AllData { get; set; }
-
-        protected OfferType(XmlNode allData)
+        public XmlNode AllData { get; }
+        public OffersType(XmlNode allData)
         {
             AllData = allData;
-
         }
 
+
+
+        public virtual void Initialize()
+        {
+            ParseOfferLine();
+            ParseBase();
+        }
+
+        public int ID()
+        {
+             return Id; 
+        }
 
         protected void ParseOfferLine()
         {
@@ -71,13 +81,10 @@ namespace TestTask
             }
         }
 
-        public int ID
-        {
-            get { return Id; }
-        }
+       
     }
 
-    class VenderModel : OfferType
+    class VenderModel : OffersType
     {
         private int cbid;
         private double localDeliveryCost;
@@ -88,9 +95,11 @@ namespace TestTask
         private bool delivery;
         private bool manufacturerWarranty;
         private string countryOfOrigin;
-        public VenderModel(XmlNode allData) : base(allData)
-        {
 
+        public VenderModel(XmlNode allData) : base(allData) { }
+
+        public override void Initialize()
+        {
             ParseOfferLine();
             ParseBase();
             ParseOther();
@@ -131,7 +140,7 @@ namespace TestTask
         }
     }
 
-    class Book : OfferType
+    class Book : OffersType
     {
         private bool delivery;
         private double localDeliveryCost;
@@ -147,7 +156,9 @@ namespace TestTask
         private string binding;
         private int pageExtene;
         private bool downloadable;
-        public Book(XmlNode allData) : base(allData)
+        public Book(XmlNode allData) : base(allData) { }
+
+        public override void Initialize()
         {
             ParseOfferLine();
             ParseBase();
@@ -204,7 +215,7 @@ namespace TestTask
         }
     }
 
-    class AudioBook : OfferType
+    class AudioBook : OffersType
     {
         private string author;
         private string name;
@@ -219,7 +230,9 @@ namespace TestTask
         private string recordingLength;
         private bool downloadable;
 
-        public AudioBook(XmlNode allData) : base(allData)
+        public AudioBook(XmlNode allData) : base(allData) { }
+
+        public override void Initialize()
         {
             ParseOfferLine();
             ParseBase();
@@ -272,7 +285,7 @@ namespace TestTask
 
     }
 
-    class ArtistTitle : OfferType
+    class ArtistTitle : OffersType
     {
         private bool delivery;
         private string artist;
@@ -284,7 +297,9 @@ namespace TestTask
         private string originalName;
         private string country;
 
-        public ArtistTitle(XmlNode allData) : base(allData)
+        public ArtistTitle(XmlNode allData) : base(allData) { }
+
+        public override void Initialize()
         {
             ParseOfferLine();
             ParseBase();
@@ -325,7 +340,7 @@ namespace TestTask
         }
     }
 
-    class Tour : OfferType
+    class Tour : OffersType
     {
         private bool delivery;
         private double localDeliveryCost;
@@ -344,7 +359,9 @@ namespace TestTask
 
 
 
-        public Tour(XmlNode allData) : base(allData)
+        public Tour(XmlNode allData) : base(allData) { }
+
+        public override void Initialize()
         {
             ParseOfferLine();
             ParseBase();
@@ -426,7 +443,7 @@ namespace TestTask
         }
     }
 
-    class EventTicket : OfferType
+    class EventTicket : OffersType
     {
 
         private bool delivery;
@@ -440,7 +457,9 @@ namespace TestTask
         private int isPremiere;
         private int isKids;
 
-        public EventTicket(XmlNode allData) : base(allData)
+        public EventTicket(XmlNode allData) : base(allData) { }
+
+        public override void Initialize()
         {
             ParseOfferLine();
             ParseBase();

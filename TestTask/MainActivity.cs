@@ -10,6 +10,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Xml;
 using Newtonsoft.Json;
+using TestTask.Factorys;
 
 
 
@@ -24,7 +25,7 @@ namespace TestTask
          * Ассоциативный массив Id -> offer.
          * По Id можно найти любой оффер и вытащить необходимые данные(реализовав предваритьно геттер)
          */
-        Dictionary<int, OfferType> IDstoOfferClasses = new Dictionary<int, OfferType>();
+        Dictionary<int, OffersType> IDstoOfferClasses = new Dictionary<int, OffersType>();
         /*
          * Список ID'шников
          */
@@ -84,83 +85,105 @@ namespace TestTask
                      * Добовляем offer в нужный класс
                      * Так же создаем новую пару ID - offer
                      */
-                    if (offer.Attributes.GetNamedItem("type").Value == "vendor.model")
-                    {
-                        VenderModel newOffer = new VenderModel(offer);
-                          IDstoOfferClasses.Add(newOffer.ID, newOffer);
-                    }
-                    if (offer.Attributes.GetNamedItem("type").Value == "book")
-                    {
-                        Book newOffer = new Book(offer);
-                          IDstoOfferClasses.Add(newOffer.ID, newOffer);
-                    }
-                    if (offer.Attributes.GetNamedItem("type").Value == "audiobook")
-                    {
-                        AudioBook newOffer = new AudioBook(offer);
-                          IDstoOfferClasses.Add(newOffer.ID, newOffer);
-                    }
-                    if (offer.Attributes.GetNamedItem("type").Value == "artist.title")
-                    {
-                        ArtistTitle newOffer = new ArtistTitle(offer);
-                         IDstoOfferClasses.Add(newOffer.ID, newOffer);
-                    }
-                    if (offer.Attributes.GetNamedItem("type").Value == "tour")
-                    {
-                        Tour newOffer = new Tour(offer);
-                        IDstoOfferClasses.Add(newOffer.ID, newOffer);
-                    
-                    }
-                    if (offer.Attributes.GetNamedItem("type").Value == "event-ticket")
-                    {
-                        EventTicket newOffer = new EventTicket(offer);
-                        IDstoOfferClasses.Add(newOffer.ID, newOffer);
-                    }
-                }
 
-            }
-            /*
-             * Переходим в сетДата, в котором получаем список и устонавливаем значения адаптера
-             * Переходим из этого метода, т.к он выполняется асинхронно, а если выполнить SetData в GetData есть шанс не заполнить массив IDtoOffer
-             */
-            SetData();
-        }
+                    switch (offer.Attributes.GetNamedItem("type").Value)
+                    {
+                        case "vendor.model":
+                            {
+                                IOffersFactory offersFactory = new VendorFactory();
+                                IOfferInitialize offerInitialize = offersFactory.CreateOffer(offer);
+                                offerInitialize.Initialize();
+                                IDstoOfferClasses.Add(offerInitialize.ID(), (OffersType)offersFactory.CreateOffer(offer));
+                                break;
+                            }
+                        case "book":
+                            {
+                                IOffersFactory offersFactory = new BookFactory();
+                                IOfferInitialize offerInitialize = offersFactory.CreateOffer(offer);
+                                offerInitialize.Initialize();
+                                IDstoOfferClasses.Add(offerInitialize.ID(), (OffersType)offersFactory.CreateOffer(offer));
+                                break;
+                            }
+                        case "audiobook":
+                            {
+                                IOffersFactory offersFactory = new AudioBookFactory();
+                                IOfferInitialize offerInitialize = offersFactory.CreateOffer(offer);
+                                offerInitialize.Initialize();
+                                IDstoOfferClasses.Add(offerInitialize.ID(), (OffersType)offersFactory.CreateOffer(offer));
+                                break;
+                            }
+                        case "artist.title":
+                            {
+                                IOffersFactory offersFactory = new ArtistTitleFactory();
+                                IOfferInitialize offerInitialize = offersFactory.CreateOffer(offer);
+                                offerInitialize.Initialize();
+                                IDstoOfferClasses.Add(offerInitialize.ID(), (OffersType)offersFactory.CreateOffer(offer));
+                                break;
+                            }
+                        case "tour":
+                            {
+                                IOffersFactory offersFactory = new TourFactory();
+                                IOfferInitialize offerInitialize = offersFactory.CreateOffer(offer);
+                                offerInitialize.Initialize();
+                                IDstoOfferClasses.Add(offerInitialize.ID(), (OffersType)offersFactory.CreateOffer(offer));
+                                break;
+                            }
 
-        /*
-         * Запоняем список Id'шников и устонавливаем настройки адаптера
-         */
-        [System.Obsolete]
-        private void SetData()
+                        case "event-ticket":
+                            {
+                                IOffersFactory offersFactory = new EventTicketFactory();
+                                IOfferInitialize offerInitialize = offersFactory.CreateOffer(offer);
+                                offerInitialize.Initialize();
+                                IDstoOfferClasses.Add(offerInitialize.ID(), (OffersType)offersFactory.CreateOffer(offer));
+                                break;
+                            }
+                    }
+                   }
+
+                   }
+                   /*
+                   * Переходим в сетДата, в котором получаем список и устонавливаем значения адаптера
+                   * Переходим из этого метода, т.к он выполняется асинхронно, а если выполнить SetData в GetData есть шанс не заполнить массив IDtoOffer
+                   */
+                                SetData();
+                            }
+
+                            /*
+                             * Запоняем список Id'шников и устонавливаем настройки адаптера
+                             */
+                            [System.Obsolete]
+                            private void SetData()
+                            {
+                                foreach (var ID in IDstoOfferClasses.Keys)
+                                {
+                                    IDs.Add(ID.ToString());
+                                }
+                                adapter = new ArrayAdapter<string>(this, Android.Resource.Layout.SimpleListItem1, IDs);
+                            }
+
+
+                            /*
+                             * Обработчик нажатия на строку ListView
+                             * Переключается на новое activity с TextView, куда и выводит объект offer
+                             * Реализуем Ассоциативный массив
+                             */
+                            private void List_ItemClick(object sender, AdapterView.ItemClickEventArgs e)
+                            {
+                                var item = adapter.GetItem(e.Position);
+                                SetContentView(Resource.Layout.activity_message);
+                                TextView textView = FindViewById<TextView>(Resource.Id.textView1);
+                                OffersType offer;
+                                if (IDstoOfferClasses.TryGetValue(Int32.Parse(item), out offer))
+                                {
+                                    textView.Text = JsonConvert.SerializeObject(offer);
+
+                                }
+
+                            }
+
+                            [Obsolete]
+                            public override void OnBackPressed()
         {
-            foreach (var ID in IDstoOfferClasses.Keys)
-            {
-                IDs.Add(ID.ToString());
-            }
-            adapter = new ArrayAdapter<string>(this, Android.Resource.Layout.SimpleListItem1, IDs);
-        }
-
-        
-        /*
-         * Обработчик нажатия на строку ListView
-         * Переключается на новое activity с TextView, куда и выводит объект offer
-         * Реализуем Ассоциативный массив
-         */
-        private void List_ItemClick(object sender, AdapterView.ItemClickEventArgs e)
-        {
-            var item = adapter.GetItem(e.Position);
-            SetContentView(Resource.Layout.activity_message);
-            TextView textView = FindViewById<TextView>(Resource.Id.textView1);
-            OfferType offer;
-            if (IDstoOfferClasses.TryGetValue(Int32.Parse(item), out offer))
-            {
-                textView.Text = JsonConvert.SerializeObject(offer);
-
-            }      
-            
-        }
-
-        [Obsolete]
-        public override void OnBackPressed()
-        {    
             base.SetContentView(Resource.Layout.activity_main);
             list = FindViewById<ListView>(Resource.Id.listView1);
             adapter = new ArrayAdapter<string>(this, Android.Resource.Layout.SimpleListItem1, IDs);

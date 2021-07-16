@@ -23,22 +23,19 @@ namespace TestTask
         protected string picture;
         protected string description;
 
-
-
         public XmlNode AllData { get; }
+
         public OffersType(XmlNode allData)
-        {
+        {   
             AllData = allData;
         }
-
-
 
         public virtual void Initialize()
         {
             ParseOfferLine();
             ParseBase();
-        }
-
+        }  
+        
         public int ID()
         {
              return Id; 
@@ -79,22 +76,20 @@ namespace TestTask
                 if (childNode.Name == "description")
                     description = childNode.InnerText; ;
             }
-        }
-
-       
+        }  
     }
 
     class VenderModel : OffersType
     {
-        private int cbid;
-        private double localDeliveryCost;
-        private string typePrefix;
-        private string vendor;
-        private string vendorCode;
-        private string model;
-        private bool delivery;
-        private bool manufacturerWarranty;
-        private string countryOfOrigin;
+        private int _cbid;
+        private double _localDeliveryCost;
+        private string _typePrefix;
+        private string _vendor;
+        private string _vendorCode;
+        private string _model;
+        private bool _delivery;
+        private bool _manufacturerWarranty;
+        private string _countryOfOrigin;
 
         public VenderModel(XmlNode allData) : base(allData) { }
 
@@ -105,57 +100,56 @@ namespace TestTask
             ParseOther();
         }
 
-
         private void ParseOther()
         {
             foreach (XmlNode childNode in AllData.ChildNodes)
             {
                 if (childNode.Name == "cbid")
-                    cbid = Int32.Parse(childNode.InnerText);
+                    _cbid = Int32.Parse(childNode.InnerText);
 
                 if (childNode.Name == "delivery")
-                    delivery = Boolean.Parse(childNode.InnerText);
+                    _delivery = Boolean.Parse(childNode.InnerText);
 
                 if (childNode.Name == "local_delivery_cost")
-                    localDeliveryCost = Double.Parse(childNode.InnerText);
+                    _localDeliveryCost = Double.Parse(childNode.InnerText);
 
                 if (childNode.Name == "typePrefix")
-                    typePrefix = childNode.InnerText;
+                    _typePrefix = childNode.InnerText;
 
                 if (childNode.Name == "vendor")
-                    vendor = childNode.InnerText;
+                    _vendor = childNode.InnerText;
 
                 if (childNode.Name == "vendorCode")
-                    vendorCode = childNode.InnerText;
+                    _vendorCode = childNode.InnerText;
 
                 if (childNode.Name == "model")
-                    model = childNode.InnerText;
+                    _model = childNode.InnerText;
 
                 if (childNode.Name == "manufacturer_warranty")
-                    manufacturerWarranty = Boolean.Parse(childNode.InnerText);
+                    _manufacturerWarranty = Boolean.Parse(childNode.InnerText);
 
                 if (childNode.Name == "country_of_origin")
-                    countryOfOrigin = childNode.InnerText;
+                    _countryOfOrigin = childNode.InnerText;
             }
         }
     }
 
     class Book : OffersType
     {
-        private bool delivery;
-        private double localDeliveryCost;
-        private string author;
-        private string name;
-        private string publisher;
-        private string series;
-        private int year;
-        private string ISBN;
-        private int volume;
-        private int part;
-        private string language;
-        private string binding;
-        private int pageExtene;
-        private bool downloadable;
+        private bool _delivery;
+        private double _localDeliveryCost;
+        private string _author;
+        private string _name;
+        private string _publisher;
+        private string _series;
+        private int _year;
+        private string _ISBN;
+        private int _volume;
+        private int _part;
+        private string _language;
+        private string _binding;
+        private int _pageExtene;
+        private bool _downloadable;
         public Book(XmlNode allData) : base(allData) { }
 
         public override void Initialize()
@@ -170,46 +164,46 @@ namespace TestTask
             foreach (XmlNode childNode in AllData.ChildNodes)
             {
                 if (childNode.Name == "delivery")
-                    delivery = Boolean.Parse(childNode.InnerText);
+                    _delivery = Boolean.Parse(childNode.InnerText);
 
                 if (childNode.Name == "local_delivery_cost")
-                    localDeliveryCost = Double.Parse(childNode.InnerText);
+                    _localDeliveryCost = Double.Parse(childNode.InnerText);
 
                 if (childNode.Name == "author")
-                    author = childNode.InnerText;
+                    _author = childNode.InnerText;
 
                 if (childNode.Name == "name")
-                    name = childNode.InnerText;
+                    _name = childNode.InnerText;
 
                 if (childNode.Name == " publisher")
-                    publisher = childNode.InnerText;
+                    _publisher = childNode.InnerText;
 
                 if (childNode.Name == "series")
-                    series = childNode.InnerText;
+                    _series = childNode.InnerText;
 
                 if (childNode.Name == "year")
-                    year = Int32.Parse(childNode.InnerText);
+                    _year = Int32.Parse(childNode.InnerText);
 
                 if (childNode.Name == "ISBN")
-                    ISBN = childNode.InnerText;
+                    _ISBN = childNode.InnerText;
 
                 if (childNode.Name == "volume")
-                    volume = Int32.Parse(childNode.InnerText);
+                    _volume = Int32.Parse(childNode.InnerText);
 
                 if (childNode.Name == "part")
-                    part = Int32.Parse(childNode.InnerText);
+                    _part = Int32.Parse(childNode.InnerText);
 
                 if (childNode.Name == "language")
-                    language = childNode.InnerText;
+                    _language = childNode.InnerText;
 
                 if (childNode.Name == "binding")
-                    binding = childNode.InnerText;
+                    _binding = childNode.InnerText;
 
                 if (childNode.Name == "page_extent")
-                    pageExtene = Int32.Parse(childNode.InnerText);
+                    _pageExtene = Int32.Parse(childNode.InnerText);
 
                 if (childNode.Name == "downloadable")
-                    downloadable = Boolean.Parse(childNode.InnerText);
+                    _downloadable = Boolean.Parse(childNode.InnerText);
 
             }
         }
@@ -217,18 +211,18 @@ namespace TestTask
 
     class AudioBook : OffersType
     {
-        private string author;
-        private string name;
-        private string publisher;
-        private int year;
-        private string ISBN;
-        private string language;
-        private string performedBy;
-        private string performanceType;
-        private string storage;
-        private string format;
-        private string recordingLength;
-        private bool downloadable;
+        private string _author;
+        private string _name;
+        private string _publisher;
+        private int _year;
+        private string _ISBN;
+        private string _language;
+        private string _performedBy;
+        private string _performanceType;
+        private string _storage;
+        private string _format;
+        private string _recordingLength;
+        private bool _downloadable;
 
         public AudioBook(XmlNode allData) : base(allData) { }
 
@@ -241,61 +235,58 @@ namespace TestTask
 
         private void ParseOther()
         {
-
             foreach (XmlNode childNode in AllData.ChildNodes)
             {
                 if (childNode.Name == "author")
-                    author = childNode.InnerText;
+                    _author = childNode.InnerText;
 
                 if (childNode.Name == "name")
-                    name = childNode.InnerText;
+                    _name = childNode.InnerText;
 
                 if (childNode.Name == " publisher")
-                    publisher = childNode.InnerText;
+                    _publisher = childNode.InnerText;
 
                 if (childNode.Name == "year")
-                    year = Int32.Parse(childNode.InnerText);
+                    _year = Int32.Parse(childNode.InnerText);
 
                 if (childNode.Name == "ISBN")
-                    ISBN = childNode.InnerText;
+                    _ISBN = childNode.InnerText;
 
                 if (childNode.Name == "language")
-                    language = childNode.InnerText;
+                    _language = childNode.InnerText;
 
                 if (childNode.Name == "performed_by")
-                    performedBy = childNode.InnerText;
+                    _performedBy = childNode.InnerText;
 
                 if (childNode.Name == "performance_type")
-                    performanceType = childNode.InnerText;
+                    _performanceType = childNode.InnerText;
 
                 if (childNode.Name == "storage")
-                    storage = childNode.InnerText;
+                    _storage = childNode.InnerText;
 
                 if (childNode.Name == "format")
-                    format = childNode.InnerText;
+                    _format = childNode.InnerText;
 
                 if (childNode.Name == "recording_length")
-                    recordingLength = childNode.InnerText;
+                    _recordingLength = childNode.InnerText;
 
                 if (childNode.Name == "downloadable")
-                    downloadable = Boolean.Parse(childNode.InnerText);
-
+                    _downloadable = Boolean.Parse(childNode.InnerText);
             }
         }
-
     }
 
     class ArtistTitle : OffersType
     {
-        private bool delivery;
-        private string artist;
-        private string title;
-        private int year;
-        private string media;
-        private string starring;
-        private string director;
-        private string originalName;
-        private string country;
+        private bool _delivery;
+        private string _artist;
+        private string _title;
+        private int _year;
+        private string _media;
+        private string _starring;
+        private string _director;
+        private string _originalName;
+        private string _country;
 
         public ArtistTitle(XmlNode allData) : base(allData) { }
 
@@ -311,51 +302,51 @@ namespace TestTask
             foreach (XmlNode childNode in AllData.ChildNodes)
             {
                 if (childNode.Name == "delivery")
-                    delivery = Boolean.Parse(childNode.InnerText);
+                    _delivery = Boolean.Parse(childNode.InnerText);
 
                 if (childNode.Name == "artist")
-                    artist = childNode.InnerText;
+                    _artist = childNode.InnerText;
 
                 if (childNode.Name == "title")
-                    title = childNode.InnerText;
+                    _title = childNode.InnerText;
 
                 if (childNode.Name == "year")
-                    year = Int32.Parse(childNode.InnerText);
+                    _year = Int32.Parse(childNode.InnerText);
 
                 if (childNode.Name == " media")
-                    media = childNode.InnerText;
+                    _media = childNode.InnerText;
 
                 if (childNode.Name == "starring")
-                    starring = childNode.InnerText;
+                    _starring = childNode.InnerText;
 
                 if (childNode.Name == "director")
-                    director = childNode.InnerText;
+                    _director = childNode.InnerText;
 
                 if (childNode.Name == "originalName")
-                    originalName = childNode.InnerText;
+                    _originalName = childNode.InnerText;
 
                 if (childNode.Name == "country")
-                    country = childNode.InnerText;
+                    _country = childNode.InnerText;
             }
         }
     }
 
     class Tour : OffersType
     {
-        private bool delivery;
-        private double localDeliveryCost;
-        private string worldRegion;
-        private string country;
-        private string region;
-        private int days;
-        private string dateTourStart;
-        private string dateTourEnd;
-        private string nextDateCheck = "9/9/9999";
-        private string hotelStars;
-        private string room;
-        private string meal;
-        private string included;
-        private string transport;
+        private bool _delivery;
+        private double _localDeliveryCost;
+        private string _worldRegion;
+        private string _country;
+        private string _region;
+        private int _days;
+        private string _dateTourStart;
+        private string _dateTourEnd;
+        private string _nextDateCheck = "9/9/9999";
+        private string _hotelStars;
+        private string _room;
+        private string _meal;
+        private string _included;
+        private string _transport;
 
 
 
@@ -368,57 +359,56 @@ namespace TestTask
             ParseOther();
         }
 
-
         private void ParseOther()
         {
             foreach (XmlNode childNode in AllData.ChildNodes)
             {
                 if (childNode.Name == "delivery")
-                    delivery = Boolean.Parse(childNode.InnerText);
+                    _delivery = Boolean.Parse(childNode.InnerText);
 
                 if (childNode.Name == "local_delivery_cost")
-                    localDeliveryCost = Double.Parse(childNode.InnerText);
+                    _localDeliveryCost = Double.Parse(childNode.InnerText);
 
                 if (childNode.Name == "worldRegion")
-                    worldRegion = childNode.InnerText;
+                    _worldRegion = childNode.InnerText;
 
                 if (childNode.Name == " country")
-                    country = childNode.InnerText;
+                    _country = childNode.InnerText;
 
                 if (childNode.Name == "region")
-                    region = childNode.InnerText;
+                    _region = childNode.InnerText;
 
                 if (childNode.Name == "days")
-                    days = Int32.Parse(childNode.InnerText);
+                    _days = Int32.Parse(childNode.InnerText);
 
                 /*
                  * Для блоков :if (!CheckDate(childNode.InnerText, nextDateCheck)) - if (CheckDate(childNode.InnerText, nextDateCheck))
                  * Находит меньшую из дат и присваевает ее dateTourStart, большую -> dateTourEnd
                  */
                 if (childNode.Name == "dataTour")
-                    if (!CheckDate(childNode.InnerText, nextDateCheck)) {
-                        dateTourStart = childNode.InnerText;
-                        nextDateCheck = childNode.InnerText;
+                    if (!CheckDate(childNode.InnerText, _nextDateCheck)) {
+                        _dateTourStart = childNode.InnerText;
+                        _nextDateCheck = childNode.InnerText;
                     }
 
                 if (childNode.Name == "dataTour")
-                    if (CheckDate(childNode.InnerText, nextDateCheck))
-                        dateTourEnd = childNode.InnerText;
+                    if (CheckDate(childNode.InnerText, _nextDateCheck))
+                        _dateTourEnd = childNode.InnerText;
 
                 if (childNode.Name == "hotelStars")
-                    hotelStars = childNode.InnerText;
+                    _hotelStars = childNode.InnerText;
 
                 if (childNode.Name == "room")
-                    room = childNode.InnerText;
+                    _room = childNode.InnerText;
 
                 if (childNode.Name == "meal")
-                    meal = childNode.InnerText;
+                    _meal = childNode.InnerText;
 
                 if (childNode.Name == "included")
-                    included = childNode.InnerText;
+                    _included = childNode.InnerText;
 
                 if (childNode.Name == "transport")
-                    transport = childNode.InnerText;
+                    _transport = childNode.InnerText;
             }
 
         }
@@ -446,16 +436,16 @@ namespace TestTask
     class EventTicket : OffersType
     {
 
-        private bool delivery;
-        private double localDeliveryCost;
-        private string name;
-        private string place;
-        private string hallPlanLink;
-        private string hallPlan;
-        private string hallPart;
-        private string date;
-        private int isPremiere;
-        private int isKids;
+        private bool _delivery;
+        private double _localDeliveryCost;
+        private string _name;
+        private string _place;
+        private string _hallPlanLink;
+        private string _hallPlan;
+        private string _hallPart;
+        private string _date;
+        private int _isPremiere;
+        private int _isKids;
 
         public EventTicket(XmlNode allData) : base(allData) { }
 
@@ -471,36 +461,35 @@ namespace TestTask
             foreach (XmlNode childNode in AllData.ChildNodes)
             {
                 if (childNode.Name == "delivery")
-                    delivery = Boolean.Parse(childNode.InnerText);
+                    _delivery = Boolean.Parse(childNode.InnerText);
 
                 if (childNode.Name == "local_delivery_cost")
-                    localDeliveryCost = Double.Parse(childNode.InnerText);
+                    _localDeliveryCost = Double.Parse(childNode.InnerText);
 
                 if (childNode.Name == "name")
-                    name = childNode.InnerText;
+                    _name = childNode.InnerText;
 
                 if (childNode.Name == "place")
-                    place = childNode.InnerText;
+                    _place = childNode.InnerText;
 
                 if (childNode.Name == "hall")
-                    hallPlanLink = childNode.Attributes.GetNamedItem("plan").Value;
+                    _hallPlanLink = childNode.Attributes.GetNamedItem("plan").Value;
 
                 if (childNode.Name == "hall")
-                    hallPlan = childNode.InnerText;
+                    _hallPlan = childNode.InnerText;
 
                 if (childNode.Name == "hall_part")
-                    hallPart = childNode.InnerText;
+                    _hallPart = childNode.InnerText;
 
                 if (childNode.Name == "date")
-                    date = childNode.InnerText;
+                    _date = childNode.InnerText;
 
                 if (childNode.Name == "is_premiere")
-                    isPremiere = Int32.Parse(childNode.InnerText);
+                    _isPremiere = Int32.Parse(childNode.InnerText);
 
                 if (childNode.Name == "isKids")
-                    isKids = Int32.Parse(childNode.InnerText);
+                    _isKids = Int32.Parse(childNode.InnerText);
             }
         }
     }
-
 }

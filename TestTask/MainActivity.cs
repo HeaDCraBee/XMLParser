@@ -11,45 +11,61 @@ using System.Threading.Tasks;
 using System.Xml;
 using Newtonsoft.Json;
 using TestTask.Factorys;
-
-
+using System.Text;
 
 namespace TestTask
 {
     [Activity(Label = "@string/app_name", Theme = "@style/AppTheme", MainLauncher = true)]
     public class MainActivity : AppCompatActivity
     {
-
-        ArrayAdapter<string> adapter;
+        private ArrayAdapter<string> _adapter;
         /*
          * Ассоциативный массив Id -> offer.
          * По Id можно найти любой оффер и вытащить необходимые данные(реализовав предваритьно геттер)
          */
-        Dictionary<int, OffersType> IDstoOfferClasses = new Dictionary<int, OffersType>();
+        private Dictionary<int, OffersType> _IdstoOfferClasses = new Dictionary<int, OffersType>();
         /*
          * Список ID'шников
          */
-        private List<string> IDs = new List<string>();
-        private ListView list;
+        private List<string> _Ids = new List<string>();
+        private ListView _list;
 
         [Obsolete]
-        protected override void OnCreate(Bundle savedInstanceState)
+        public override void OnBackPressed()
         {
+            base.SetContentView(Resource.Layout.activity_main);
+            _list = FindViewById<ListView>(Resource.Id.listView1);
+            _adapter = new ArrayAdapter<string>(this, Android.Resource.Layout.SimpleListItem1, _Ids);
+            _list.SetAdapter(_adapter);
+            _list.ItemClick += List_ItemClick;
+        }
+
+        public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
+        {
+            Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+
+            base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+
+        [Obsolete]
+        protected async override void OnCreate(Bundle savedInstanceState)
+        {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             GetData();
             base.OnCreate(savedInstanceState);
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             // Set our view from the "main" layout resource
             SetContentView(Resource.Layout.activity_main);
-            list = FindViewById<ListView>(Resource.Id.listView1);
-            list.SetAdapter(adapter);
-            list.ItemClick += List_ItemClick;
+            _list = FindViewById<ListView>(Resource.Id.listView1);
+            _list.SetAdapter(_adapter);
+            _list.ItemClick += List_ItemClick;
         }
 
         /*
          * Получение данных
          */
         [System.Obsolete]
-        private async void GetData()
+        private void GetData()
         {
             string sURL;
             sURL = "http://partner.market.yandex.ru/pages/help/YML.xml";
@@ -59,14 +75,14 @@ namespace TestTask
 
             Stream objStream;
             objStream = wrGETURL.GetResponse().GetResponseStream();
+
             XmlDocument doc = new XmlDocument();
             doc.Load(objStream);
 
             /*
              * Парсим файл
              */
-            await Task.Run(() => Parse(doc));
-
+            Parse(doc);
         }
 
 
@@ -76,126 +92,102 @@ namespace TestTask
         {
             XmlNode offers = doc.GetElementsByTagName("offers")[0];
             XmlNode offer;
+
             foreach (XmlNode xNode in offers)
             {
                 if (xNode.Name == "offer")
                 {
                     offer = xNode;
+                    IOffersFactory offersFactory = null;
+
                     /*
                      * Добовляем offer в нужный класс
                      * Так же создаем новую пару ID - offer
                      */
-
                     switch (offer.Attributes.GetNamedItem("type").Value)
                     {
                         case "vendor.model":
                             {
-                                IOffersFactory offersFactory = new VendorFactory();
-                                IOfferInitialize offerInitialize = offersFactory.CreateOffer(offer);
-                                offerInitialize.Initialize();
-                                IDstoOfferClasses.Add(offerInitialize.ID(), (OffersType)offersFactory.CreateOffer(offer));
+                                offersFactory = new VendorFactory();
                                 break;
                             }
                         case "book":
                             {
-                                IOffersFactory offersFactory = new BookFactory();
-                                IOfferInitialize offerInitialize = offersFactory.CreateOffer(offer);
-                                offerInitialize.Initialize();
-                                IDstoOfferClasses.Add(offerInitialize.ID(), (OffersType)offersFactory.CreateOffer(offer));
+                                offersFactory = new BookFactory();                             
                                 break;
                             }
                         case "audiobook":
                             {
-                                IOffersFactory offersFactory = new AudioBookFactory();
-                                IOfferInitialize offerInitialize = offersFactory.CreateOffer(offer);
-                                offerInitialize.Initialize();
-                                IDstoOfferClasses.Add(offerInitialize.ID(), (OffersType)offersFactory.CreateOffer(offer));
+                                offersFactory = new AudioBookFactory();
                                 break;
                             }
                         case "artist.title":
                             {
-                                IOffersFactory offersFactory = new ArtistTitleFactory();
-                                IOfferInitialize offerInitialize = offersFactory.CreateOffer(offer);
-                                offerInitialize.Initialize();
-                                IDstoOfferClasses.Add(offerInitialize.ID(), (OffersType)offersFactory.CreateOffer(offer));
+                                offersFactory = new ArtistTitleFactory();
                                 break;
                             }
                         case "tour":
                             {
-                                IOffersFactory offersFactory = new TourFactory();
-                                IOfferInitialize offerInitialize = offersFactory.CreateOffer(offer);
-                                offerInitialize.Initialize();
-                                IDstoOfferClasses.Add(offerInitialize.ID(), (OffersType)offersFactory.CreateOffer(offer));
+                                offersFactory = new TourFactory();
                                 break;
                             }
 
                         case "event-ticket":
                             {
-                                IOffersFactory offersFactory = new EventTicketFactory();
-                                IOfferInitialize offerInitialize = offersFactory.CreateOffer(offer);
-                                offerInitialize.Initialize();
-                                IDstoOfferClasses.Add(offerInitialize.ID(), (OffersType)offersFactory.CreateOffer(offer));
+                                offersFactory = new EventTicketFactory();
                                 break;
                             }
                     }
-                   }
 
-                   }
-                   /*
-                   * Переходим в сетДата, в котором получаем список и устонавливаем значения адаптера
-                   * Переходим из этого метода, т.к он выполняется асинхронно, а если выполнить SetData в GetData есть шанс не заполнить массив IDtoOffer
-                   */
-                                SetData();
-                            }
+                    if (offersFactory != null)
+                    {
+                        IOfferInitialize offerInitialize = offersFactory.CreateOffer(offer);
+                        offerInitialize.Initialize();
+                        _IdstoOfferClasses.Add(offerInitialize.ID(), (OffersType)offersFactory.CreateOffer(offer));
+                    }
+                }
 
-                            /*
-                             * Запоняем список Id'шников и устонавливаем настройки адаптера
-                             */
-                            [System.Obsolete]
-                            private void SetData()
-                            {
-                                foreach (var ID in IDstoOfferClasses.Keys)
-                                {
-                                    IDs.Add(ID.ToString());
-                                }
-                                adapter = new ArrayAdapter<string>(this, Android.Resource.Layout.SimpleListItem1, IDs);
-                            }
+            }
 
-
-                            /*
-                             * Обработчик нажатия на строку ListView
-                             * Переключается на новое activity с TextView, куда и выводит объект offer
-                             * Реализуем Ассоциативный массив
-                             */
-                            private void List_ItemClick(object sender, AdapterView.ItemClickEventArgs e)
-                            {
-                                var item = adapter.GetItem(e.Position);
-                                SetContentView(Resource.Layout.activity_message);
-                                TextView textView = FindViewById<TextView>(Resource.Id.textView1);
-                                OffersType offer;
-                                if (IDstoOfferClasses.TryGetValue(Int32.Parse(item), out offer))
-                                {
-                                    textView.Text = JsonConvert.SerializeObject(offer);
-
-                                }
-
-                            }
-
-                            [Obsolete]
-                            public override void OnBackPressed()
-        {
-            base.SetContentView(Resource.Layout.activity_main);
-            list = FindViewById<ListView>(Resource.Id.listView1);
-            adapter = new ArrayAdapter<string>(this, Android.Resource.Layout.SimpleListItem1, IDs);
-            list.SetAdapter(adapter);
-            list.ItemClick += List_ItemClick;
+            /*
+            * Переходим в сетДата, в котором получаем список и устонавливаем значения адаптера
+            * Переходим из этого метода, т.к он выполняется асинхронно, а если выполнить SetData в GetData есть шанс не заполнить массив IDtoOffer
+            */
+            SetData();
         }
 
-        public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
+        /*
+         * Запоняем список Id'шников и устонавливаем настройки адаптера
+         */
+        [System.Obsolete]
+        private void SetData()
         {
-            Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+            foreach (var ID in _IdstoOfferClasses.Keys)
+            {
+                _Ids.Add(ID.ToString());
+            }
 
-            base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+            _adapter = new ArrayAdapter<string>(this, Android.Resource.Layout.SimpleListItem1, _Ids);
+        }
+
+
+        /*
+         * Обработчик нажатия на строку ListView
+         * Переключается на новое activity с TextView, куда и выводит объект offer
+         * Реализуем Ассоциативный массив
+         */
+        private void List_ItemClick(object sender, AdapterView.ItemClickEventArgs e)
+        {
+            var item = _adapter.GetItem(e.Position);
+            SetContentView(Resource.Layout.activity_message);
+            TextView textView = FindViewById<TextView>(Resource.Id.textView1);
+            OffersType offer;
+
+            if (_IdstoOfferClasses.TryGetValue(Int32.Parse(item), out offer))
+            {
+                textView.Text = JsonConvert.SerializeObject(offer);
+
+            }
         }
     }
 }

@@ -7,7 +7,6 @@ using System.Net;
 using System.Collections.Generic;
 using System;
 using System.IO;
-using System.Threading.Tasks;
 using System.Xml;
 using Newtonsoft.Json;
 using TestTask.Factorys;
@@ -50,15 +49,15 @@ namespace TestTask
         [Obsolete]
         protected async override void OnCreate(Bundle savedInstanceState)
         {
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             GetData();
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);          
             base.OnCreate(savedInstanceState);
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             // Set our view from the "main" layout resource
             SetContentView(Resource.Layout.activity_main);
             _list = FindViewById<ListView>(Resource.Id.listView1);
             _list.SetAdapter(_adapter);
-            _list.ItemClick += List_ItemClick;
+            //_list.ItemClick += List_ItemClick;
         }
 
         /*
@@ -186,7 +185,6 @@ namespace TestTask
             if (_IdstoOfferClasses.TryGetValue(Int32.Parse(item), out offer))
             {
                 textView.Text = JsonConvert.SerializeObject(offer);
-
             }
         }
     }

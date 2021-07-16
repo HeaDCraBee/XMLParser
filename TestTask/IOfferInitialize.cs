@@ -14,8 +14,7 @@ namespace TestTask
 {
     interface IOfferInitialize
     {
-        void Initialize();
-        int ID();
-        
+        public void Initialize();
+        public int ID();     
     }
 }

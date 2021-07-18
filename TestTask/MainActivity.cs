@@ -19,11 +19,26 @@ namespace TestTask
     public class MainActivity : AppCompatActivity
     {
         private ArrayAdapter<string> _adapter;
+
+        /*
+         * Словарь фабрик, для пораждения экземпляров классов
+         */
+        private readonly Dictionary<string, IOffersFactory> _offerToFactory = new Dictionary<string, IOffersFactory>()
+        {
+            { "vendor.model", new VendorFactory() },
+            { "book", new BookFactory() },
+            { "audiobook", new AudioBookFactory() },
+            { "artist.title", new ArtistTitleFactory() },
+            { "tour", new TourFactory() },
+            { "event-ticket", new EventTicketFactory() } 
+        };
+
         /*
          * Ассоциативный массив Id -> offer.
-         * По Id можно найти любой оффер и вытащить необходимые данные(реализовав предваритьно геттер)
+         * По Id можно найти любой оффер и вытащить необходимые данные(при декларировании и реализации ссответствующих методов)
          */
-        private Dictionary<int, OffersType> _IdstoOfferClasses = new Dictionary<int, OffersType>();
+        private Dictionary<int, IOfferInitialize> _IdstoOfferClasses = new Dictionary<int, IOfferInitialize>();
+
         /*
          * Список ID'шников
          */
@@ -46,7 +61,6 @@ namespace TestTask
 
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         }
-
 
         [Obsolete]
         protected override void OnCreate(Bundle savedInstanceState)
@@ -71,12 +85,6 @@ namespace TestTask
             var setDataTask = Task.Factory.StartNew(SetData);
             await Task.WhenAll(setDataTask);
         }
-
-
-       // private async Task<XmlDocument> GetDataAsync()
-      //  {
-    //        return await Task.Factory.StartNew(GetData);
-      //  }
 
         private XmlDocument GetData()
         {
@@ -112,46 +120,16 @@ namespace TestTask
                      * Добовляем offer в нужный класс
                      * Так же создаем новую пару ID - offer
                      */
-                    switch (offer.Attributes.GetNamedItem("type").Value)
+                    if (_offerToFactory.ContainsKey(offer.Attributes.GetNamedItem("type").Value))
                     {
-                        case "vendor.model":
-                            {
-                                offersFactory = new VendorFactory();
-                                break;
-                            }
-                        case "book":
-                            {
-                                offersFactory = new BookFactory();                             
-                                break;
-                            }
-                        case "audiobook":
-                            {
-                                offersFactory = new AudioBookFactory();
-                                break;
-                            }
-                        case "artist.title":
-                            {
-                                offersFactory = new ArtistTitleFactory();
-                                break;
-                            }
-                        case "tour":
-                            {
-                                offersFactory = new TourFactory();
-                                break;
-                            }
-
-                        case "event-ticket":
-                            {
-                                offersFactory = new EventTicketFactory();
-                                break;
-                            }
+                        offersFactory = _offerToFactory[offer.Attributes.GetNamedItem("type").Value];
                     }
 
                     if (offersFactory != null)
                     {
-                        IOfferInitialize offerInitialize = offersFactory.CreateOffer(offer);
+                        var offerInitialize = offersFactory.CreateOffer(offer);
                         offerInitialize.Initialize();
-                        _IdstoOfferClasses.Add(offerInitialize.ID(), (OffersType)offersFactory.CreateOffer(offer));
+                        _IdstoOfferClasses.Add(offerInitialize.ID(), offerInitialize);
                     }
                 }
 
@@ -170,7 +148,6 @@ namespace TestTask
             }
 
             _adapter = new ArrayAdapter<string>(this, Android.Resource.Layout.SimpleListItem1, _Ids);
-           // _list.SetAdapter(_adapter);
         }
 
 
@@ -184,7 +161,7 @@ namespace TestTask
             var item = _adapter.GetItem(e.Position);
             SetContentView(Resource.Layout.activity_message);
             TextView textView = FindViewById<TextView>(Resource.Id.textView1);
-            OffersType offer;
+            IOfferInitialize offer;
 
             if (_IdstoOfferClasses.TryGetValue(Int32.Parse(item), out offer))
             {

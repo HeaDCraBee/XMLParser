@@ -11,6 +11,7 @@ using System.Xml;
 using Newtonsoft.Json;
 using TestTask.Factorys;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace TestTask
 {
@@ -46,25 +47,38 @@ namespace TestTask
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         }
 
+
         [Obsolete]
-        protected async override void OnCreate(Bundle savedInstanceState)
+        protected override void OnCreate(Bundle savedInstanceState)
         {
-            GetData();
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);          
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            var realizeDataTask = RealizeDataAsync();
             base.OnCreate(savedInstanceState);
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
-            // Set our view from the "main" layout resource
+            // Set our view from the "main" layout resource           
             SetContentView(Resource.Layout.activity_main);
             _list = FindViewById<ListView>(Resource.Id.listView1);
+            Task.WhenAll(realizeDataTask);
             _list.SetAdapter(_adapter);
-            //_list.ItemClick += List_ItemClick;
+            _list.ItemClick += List_ItemClick;
         }
 
-        /*
-         * Получение данных
-         */
-        [System.Obsolete]
-        private void GetData()
+        [Obsolete]
+        private async Task RealizeDataAsync()
+        {
+            var parseTask = Task.Factory.StartNew(() => Parse(GetData()));
+            Task.WaitAll(parseTask);
+            var setDataTask = Task.Factory.StartNew(SetData);
+            await Task.WhenAll(setDataTask);
+        }
+
+
+       // private async Task<XmlDocument> GetDataAsync()
+      //  {
+    //        return await Task.Factory.StartNew(GetData);
+      //  }
+
+        private XmlDocument GetData()
         {
             string sURL;
             sURL = "http://partner.market.yandex.ru/pages/help/YML.xml";
@@ -77,14 +91,9 @@ namespace TestTask
 
             XmlDocument doc = new XmlDocument();
             doc.Load(objStream);
-
-            /*
-             * Парсим файл
-             */
-            Parse(doc);
+             
+            return doc;
         }
-
-
 
         [System.Obsolete]
         private void Parse(XmlDocument doc)
@@ -147,12 +156,6 @@ namespace TestTask
                 }
 
             }
-
-            /*
-            * Переходим в сетДата, в котором получаем список и устонавливаем значения адаптера
-            * Переходим из этого метода, т.к он выполняется асинхронно, а если выполнить SetData в GetData есть шанс не заполнить массив IDtoOffer
-            */
-            SetData();
         }
 
         /*
@@ -167,6 +170,7 @@ namespace TestTask
             }
 
             _adapter = new ArrayAdapter<string>(this, Android.Resource.Layout.SimpleListItem1, _Ids);
+           // _list.SetAdapter(_adapter);
         }
 
 

@@ -26,7 +26,7 @@ namespace TestTask
         public XmlNode AllData { get; }
 
         public OffersType(XmlNode allData)
-        {   
+        {
             AllData = allData;
         }
 
@@ -34,11 +34,11 @@ namespace TestTask
         {
             ParseOfferLine();
             ParseBase();
-        }  
-        
+        }
+
         public int ID()
         {
-             return Id; 
+            return Id;
         }
 
         protected void ParseOfferLine()
@@ -76,7 +76,7 @@ namespace TestTask
                 if (childNode.Name == "description")
                     description = childNode.InnerText; ;
             }
-        }  
+        }
     }
 
     class VenderModel : OffersType
@@ -386,7 +386,8 @@ namespace TestTask
                  * Находит меньшую из дат и присваевает ее dateTourStart, большую -> dateTourEnd
                  */
                 if (childNode.Name == "dataTour")
-                    if (!CheckDate(childNode.InnerText, _nextDateCheck)) {
+                    if (!CheckDate(childNode.InnerText, _nextDateCheck))
+                    {
                         _dateTourStart = childNode.InnerText;
                         _nextDateCheck = childNode.InnerText;
                     }

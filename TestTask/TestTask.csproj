@@ -75,8 +75,8 @@
     <Compile Include="Factorys\VendorFactory.cs" />
     <Compile Include="IOfferInitialize.cs" />
     <Compile Include="Factorys\IOffersFactory.cs" />
-    <Compile Include="OfferType.cs" />
     <Compile Include="MainActivity.cs" />
+    <Compile Include="OffersType.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
